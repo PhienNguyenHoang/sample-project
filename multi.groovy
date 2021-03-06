@@ -17,32 +17,32 @@ pipeline {
     KUBECONFIG="/home/cse/.kube/config"
   }
 
-   parameters {
-    string (name: "gitBranch", defaultValue: "${env.BRANCH_NAME}", description: "Branch to build")
-    // string (name: "git_sha", defaultValue: "HEAD", description: "sha to build")
-  }
+//    parameters {
+//     string (name: "gitBranch", defaultValue: "${env.BRANCH_NAME}", description: "Branch to build")
+//     // string (name: "git_sha", defaultValue: "HEAD", description: "sha to build")
+//   }
 
-  triggers {
-    GenericTrigger(
-      genericVariables: [
-        [key: 'gitBranch', value: '$.ref'],
-        [key: 'git_sha', value: '$.after'],
-        //[key: 'changed_files', value: '$.commits[*].["modified","added","removed"][*]']
-      ],
+//   triggers {
+//     GenericTrigger(
+//       genericVariables: [
+//         [key: 'gitBranch', value: '$.ref'],
+//         [key: 'git_sha', value: '$.after'],
+//         //[key: 'changed_files', value: '$.commits[*].["modified","added","removed"][*]']
+//       ],
 
-      causeString: 'Triggered on $gitBranch',
+//       causeString: 'Triggered on $gitBranch',
 
-      // token: 'trueprofile-api-build',
+//       // token: 'trueprofile-api-build',
 
-      printContributedVariables: true,
-      printPostContent: true,
+//       printContributedVariables: true,
+//       printPostContent: true,
 
-      silentResponse: false,
+//       silentResponse: false,
 
-      regexpFilterText: '$gitBranch',
-      regexpFilterExpression: '^refs/heads/*'
-      )
-  }
+//       regexpFilterText: '$gitBranch',
+//       regexpFilterExpression: '^refs/heads/*'
+//       )
+//   }
 
 
   stages {
@@ -58,7 +58,7 @@ pipeline {
         dir('./') {
           checkout ( [$class: 'GitSCM',
             extensions: [[$class: 'CloneOption', timeout: 30]],
-            branches: [[name: "${gitBranch}" ]],
+            branches: [[name: "${env.BRANCH_NAME}" ]],
             userRemoteConfigs: [[
               credentialsId: "6e08bd98-e13c-484a-945f-57c278ab6791",
               url: "https://github.com/ititiu14078/sample-project.git"]]])
