@@ -71,9 +71,9 @@ pipeline {
       steps {
         dir('./') {
           sh """
-            docker build -t phienhoangnguyen/thesis-phien-2021:\${BUILD_NUMBER} .
+            docker build -t phienhoangnguyen/thesis-phien-2021:\${env.BRANCH_NAME}-\${BUILD_NUMBER} .
             docker login -u phienhoangnguyen -p nothing@@
-            docker push phienhoangnguyen/thesis-phien-2021:\${BUILD_NUMBER}
+            docker push phienhoangnguyen/thesis-phien-2021:\${env.BRANCH_NAME}-\${BUILD_NUMBER}
           """
         }
       }
@@ -92,7 +92,7 @@ pipeline {
         dir('./') {
           sh """
             helm repo add bitnami https://charts.bitnami.com/bitnami
-            helm upgrade --install phien-java-app --set image.repository=phienhoangnguyen/thesis-phien-2021 --set image.tag=\${BUILD_NUMBER} --set image.pullPolicy=Always --set tomcatPassword=2MNxLHqfIg bitnami/tomcat
+            helm upgrade --install phien-java-app-\${env.BRANCH_NAME} --set image.repository=phienhoangnguyen/thesis-phien-2021 --set image.tag=\${env.BRANCH_NAME}\${BUILD_NUMBER} --set image.pullPolicy=Always --set tomcatPassword=2MNxLHqfIg bitnami/tomcat
           """
         }
       }
