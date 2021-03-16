@@ -17,10 +17,10 @@ pipeline {
     KUBECONFIG="/home/cse/.kube/config"
   }
 
-//    parameters {
-//     string (name: "gitBranch", defaultValue: "${env.BRANCH_NAME}", description: "Branch to build")
-//     // string (name: "git_sha", defaultValue: "HEAD", description: "sha to build")
-//   }
+   parameters {
+    string (name: "gitBranch", defaultValue: "${env.BRANCH_NAME}", description: "Branch to build")
+    // string (name: "git_sha", defaultValue: "HEAD", description: "sha to build")
+  }
 
 //   triggers {
 //     GenericTrigger(
@@ -71,9 +71,9 @@ pipeline {
       steps {
         dir('./') {
           sh """
-            docker build -t phienhoangnguyen/thesis-phien-2021:\${BUILD_NUMBER} .
+            docker build -t phienhoangnguyen/thesis-phien-2021:${gitBranch}-\${BUILD_NUMBER} .
             docker login -u phienhoangnguyen -p nothing@@
-            docker push phienhoangnguyen/thesis-phien-2021:\${BUILD_NUMBER}
+            docker push phienhoangnguyen/thesis-phien-2021:${gitBranch}-\${BUILD_NUMBER}
           """
         }
       }
@@ -92,7 +92,7 @@ pipeline {
         dir('./') {
           sh """
             helm repo add bitnami https://charts.bitnami.com/bitnami
-            helm upgrade --install phien-java-app --set image.repository=phienhoangnguyen/thesis-phien-2021 --set image.tag=\${BUILD_NUMBER} --set image.pullPolicy=Always --set tomcatPassword=2MNxLHqfIg bitnami/tomcat
+            helm upgrade --install phien-java-app-${gitBranch} --set image.repository=phienhoangnguyen/thesis-phien-2021 --set image.tag=${gitBranch}-\${BUILD_NUMBER} --set image.pullPolicy=Always --set tomcatPassword=2MNxLHqfIg bitnami/tomcat
           """
         }
       }
@@ -102,7 +102,7 @@ pipeline {
   post {
     always {
       cleanWs()
-      slackSend channel: "${SLACK_CHANNEL}", color: COLOR_MAP[currentBuild.currentResult] , message: "Deployment *`${currentBuild.currentResult}`* - ${env.JOB_NAME} #${env.BUILD_NUMBER} - Branch: ${env.BRANCH_NAME}"
+      slackSend channel: "${SLACK_CHANNEL}", color: COLOR_MAP[currentBuild.currentResult] , message: "@${gitBranch} Deployment *`${currentBuild.currentResult}`* - ${env.JOB_NAME} #${env.BUILD_NUMBER} - Branch: ${env.BRANCH_NAME}"
     }
   } 
 
